@@ -15,11 +15,12 @@ with open('out.model', 'wb') as f:
 
 import os
 from typing import List
-
+import logging
 from sentencepiece import SentencePieceProcessor
 
 
-
+# Create a logger
+logger = logging.getLogger(__name__)
 
 
 class Tokenizer(PreTrainedTokenizer):
