@@ -1,40 +1,31 @@
-import urllib.request
-import io
+input_file = "/content/bothcan.txt" # Replace with actual input file path
+model_prefix = "botchan" # Replace with desired model save path
 import sentencepiece as spm
-from transformers.tokenization_utils import AddedToken, PreTrainedTokenizer
-# Loads model from URL as iterator and stores the model to BytesIO.
-model = io.BytesIO()
-with urllib.request.urlopen(
-    'https://raw.githubusercontent.com/google/sentencepiece/master/data/botchan.txt'
-) as response:
-  spm.SentencePieceTrainer.train(
-      sentence_iterator=response, model_writer=model, vocab_size=1000)
-  
-with open('out.model', 'wb') as f:
-  f.write(model.getvalue())
+spm.SentencePieceTrainer.train(
+input=input_file,
+model_prefix=model_prefix,
+vocab_size=1000, # Adjust as needed, this is just an example value
+model_type="unigram", # You can use different models like unigram or bpe
+)
 
-import os
-from typing import List
-import logging
 from sentencepiece import SentencePieceProcessor
 
+model_path = "botchan.model" # Replace with the actual path
+sp_model = SentencePieceProcessor(model_file=model_path)
+vocab_size = 4000
 
-# Create a logger
-logger = logging.getLogger(__name__)
+import os
+from logging import getLogger
+from typing import List
+
+from sentencepiece import SentencePieceProcessor
+from transformers.tokenization_utils import AddedToken, PreTrainedTokenizer
+
+logger = getLogger()
 
 
 class Tokenizer(PreTrainedTokenizer):
-    """tokenizing and encoding/decoding text using SentencePiece."""
     def __init__(self, model_path: str):
-        """
-        Initializes the Tokenizer with a SentencePiece model.
-
-
-
-
-        Args:
-            model_path (str): The path to the SentencePiece model file.
-        """
         # reload tokenizer
         assert os.path.isfile(model_path), model_path
         self.sp_model = SentencePieceProcessor(model_file=model_path)
@@ -51,17 +42,6 @@ class Tokenizer(PreTrainedTokenizer):
         assert self.sp_model.vocab_size() == self.sp_model.get_piece_size()
 
     def encode(self, s: str, bos: bool, eos: bool) -> List[int]:
-        """
-        Encodes a string into a list of token IDs.
-
-        Args:
-            s (str): The input string to be encoded.
-            bos (bool): Whether to prepend the beginning-of-sequence token.
-            eos (bool): Whether to append the end-of-sequence token.
-
-        Returns:
-            List[int]: A list of token IDs.
-        """
         assert type(s) is str
         t = self.sp_model.encode(s)
         if bos:
@@ -71,16 +51,9 @@ class Tokenizer(PreTrainedTokenizer):
         return t
 
     def decode(self, t: List[int]) -> str:
-        """
-        Decodes a list of token IDs into a string.
-
-        Args:
-            t (List[int]): The list of token IDs to be decoded.
-
-        Returns:
-            str: The decoded string.
-        """
         return self.sp_model.decode(t)
+
+tokenizer = Tokenizer(model_path="botchan.model") # Replace with actual model path
 
 
 Tokenizer.register("tokenizer12")
