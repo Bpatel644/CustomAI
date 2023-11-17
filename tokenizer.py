@@ -21,7 +21,7 @@ from typing import List
 from sentencepiece import SentencePieceProcessor
 from transformers.tokenization_utils import AddedToken, PreTrainedTokenizer
 
-logger = getLogger()
+logger = logging.get_logger(__name__)
 
 
 class Tokenizer(PreTrainedTokenizer):
@@ -56,4 +56,3 @@ class Tokenizer(PreTrainedTokenizer):
 tokenizer = Tokenizer(model_path="botchan.model") # Replace with actual model path
 
 
-Tokenizer.register("tokenizer12")
