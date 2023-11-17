@@ -28,6 +28,9 @@ class Tokenizer(PreTrainedTokenizer):
         """
         Initializes the Tokenizer with a SentencePiece model.
 
+
+
+
         Args:
             model_path (str): The path to the SentencePiece model file.
         """
@@ -77,3 +80,6 @@ class Tokenizer(PreTrainedTokenizer):
             str: The decoded string.
         """
         return self.sp_model.decode(t)
+
+
+Tokenizer.register("tokenizer12")
