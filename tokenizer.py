@@ -1,7 +1,7 @@
 import urllib.request
 import io
 import sentencepiece as spm
-
+from transformers.tokenization_utils import AddedToken, PreTrainedTokenizer
 # Loads model from URL as iterator and stores the model to BytesIO.
 model = io.BytesIO()
 with urllib.request.urlopen(
@@ -22,7 +22,7 @@ from sentencepiece import SentencePieceProcessor
 
 
 
-class Tokenizer:
+class Tokenizer(PreTrainedTokenizer):
     """tokenizing and encoding/decoding text using SentencePiece."""
     def __init__(self, model_path: str):
         """
