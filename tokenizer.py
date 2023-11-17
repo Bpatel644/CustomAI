@@ -1,10 +1,11 @@
-from transformers.tokenization_utils import AddedToken, PreTrainedTokenizer
+from transformers.tokenization_utils import PreTrainedTokenizer
 from sentencepiece import SentencePieceProcessor
 from typing import List
 import os
 
 class Tokenizer(PreTrainedTokenizer):
-    def __init__(self, model_path: str):
+    def __init__(self, model_path: str, **kwargs):
+        super(Tokenizer, self).__init__(**kwargs)
         # reload tokenizer
         assert os.path.isfile(model_path), model_path
         self.sp_model = SentencePieceProcessor(model_file=model_path)
