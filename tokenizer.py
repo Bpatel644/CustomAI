@@ -1,44 +1,20 @@
-input_file = "/content/bothcan.txt" # Replace with actual input file path
-model_prefix = "botchan" # Replace with desired model save path
-import sentencepiece as spm
-spm.SentencePieceTrainer.train(
-input=input_file,
-model_prefix=model_prefix,
-vocab_size=1000, # Adjust as needed, this is just an example value
-model_type="unigram", # You can use different models like unigram or bpe
-)
-
-from sentencepiece import SentencePieceProcessor
-
-model_path = "botchan.model" # Replace with the actual path
-sp_model = SentencePieceProcessor(model_file=model_path)
-vocab_size = 4000
-
-import os
-from logging import getLogger
-from typing import List
-
-from sentencepiece import SentencePieceProcessor
 from transformers.tokenization_utils import AddedToken, PreTrainedTokenizer
-
-logger = getLogger()
-
+from sentencepiece import SentencePieceProcessor
+from typing import List
+import os
 
 class Tokenizer(PreTrainedTokenizer):
     def __init__(self, model_path: str):
         # reload tokenizer
         assert os.path.isfile(model_path), model_path
         self.sp_model = SentencePieceProcessor(model_file=model_path)
-        logger.info(f"Reloaded SentencePiece model from {model_path}")
 
         # BOS / EOS token IDs
         self.n_words: int = self.sp_model.vocab_size()
         self.bos_id: int = self.sp_model.bos_id()
         self.eos_id: int = self.sp_model.eos_id()
         self.pad_id: int = self.sp_model.pad_id()
-        logger.info(
-            f"#words: {self.n_words} - BOS ID: {self.bos_id} - EOS ID: {self.eos_id}"
-        )
+
         assert self.sp_model.vocab_size() == self.sp_model.get_piece_size()
 
     def encode(self, s: str, bos: bool, eos: bool) -> List[int]:
